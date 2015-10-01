@@ -21,7 +21,7 @@ module Rack::Authorize
 
     def authorizable_route?(env)
       if @no_auth_routes.length > 0
-        !@no_auth_routes.find { |route| route =~ env['PATH_INFO'] }
+        !@no_auth_routes.find { |route| route =~ /"#{env['PATH_INFO']}"/ }
       end
     end
   end
