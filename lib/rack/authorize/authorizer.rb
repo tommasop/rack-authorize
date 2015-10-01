@@ -1,8 +1,8 @@
 module Rack::Authorize
   class Authorizer
-    def initialize(app, opts = {}, &block)
+    def initialize(app, excludes = nil, &block)
       @app = app
-      @no_auth_routes = opts[:exclude] || nil
+      @no_auth_routes = excludes
       @block = block
     end
 
@@ -18,7 +18,6 @@ module Rack::Authorize
     end
 
     private
-
 
     def authorizable_route?(env)
       if @no_auth_routes.length > 0
