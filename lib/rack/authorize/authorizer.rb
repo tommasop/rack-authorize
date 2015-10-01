@@ -7,6 +7,7 @@ module Rack::Authorize
     end
 
     def call(env)
+      puts env
       if authorizable_route?(env)
         method = env["REQUEST_METHOD"]
         path = env["PATH_INFO"]
