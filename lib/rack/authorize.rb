@@ -6,8 +6,8 @@ require "rack/authorize/rule"
 require "rack/authorize/authorizer"
 module Rack
   module Authorize
-    def self.new(app, excludes = nil, &block)
-      Authorizer.new(app, excludes, &block)
+    def self.new(app, opts={}, &block)
+      Authorizer.new(app, opts, &block)
     end
   end
 end
