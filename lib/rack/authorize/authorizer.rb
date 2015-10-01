@@ -15,7 +15,7 @@ module Rack::Authorize
         puts "----------------------------"
         puts env
         puts "----------------------------"
-        scopes = env.fetch("rack.jwt.session", {})["scopes"] 
+        scopes = env.fetch("rack.jwt.session", {})["scopes"].to_hash 
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
       end
       @app.call(env)
