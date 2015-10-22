@@ -10,6 +10,7 @@ module Rack::Authorize
 
     def relevant?(method, path)
       method = method.downcase.to_sym
+      puts "#{path} == #{@path}" 
       if @method == :all
         @path == :all || path == @path
       elsif @path == :all
