@@ -19,7 +19,7 @@ module Rack::Authorize
         (@method == :all && @path == :all) ||
         (method == @method && path == @path) ||
         # Implementing authorization for /users/:id
-        (method == @method && path.match(/#{@path}\/\d/)[0])
+        (method == @method && path ~= /#{@path}\/\d/)
       end
     end
   end
