@@ -11,12 +11,12 @@ module Rack::Authorize
     def relevant?(method, path)
       method = method.downcase.to_sym
       if @method == :all
-        @path == :all || path =~ /#{@path}\/([^\/]+)|#{@path}/
+        @path == :all || path =~ /#{@path}(\/([^\/]+))*|#{@path}/
       elsif @path == :all
         @method == :all || method == @method
       else
         (@method == :all && @path == :all) ||
-        (method == @method && path =~ /#{@path}\/([^\/]+)/)
+        (method == @method && path =~ /#{@path}(\/([^\/]+))*/)
       end
     end
   end
