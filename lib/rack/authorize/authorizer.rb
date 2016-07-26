@@ -3,6 +3,7 @@ module Rack::Authorize
     def initialize(app, opts = {}, &block)
       @app = app
       @no_auth_routes = opts[:excludes] || {}
+      @auth_definition = opts[:auth_definition] || "scopes"
       @block = block
     end
 
@@ -15,7 +16,7 @@ module Rack::Authorize
         #puts "----------------------------"
         #puts env
         #puts "----------------------------"
-        scopes = Oj.load(env.fetch("rack.jwt.session", {})["scopes"])
+        scopes = Oj.load(env.fetch("rack.jwt.session", {})[@auth_definition])
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
       end
       @app.call(env)
