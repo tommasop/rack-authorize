@@ -28,7 +28,7 @@ module Rack::Authorize
       if @no_auth_routes.length > 0
         !@no_auth_routes.find do |route| 
           if route =~ /\*/
-            env['PATH_INFO'] =~ route.chomp("*")
+            env['PATH_INFO'] =~ /#{route.chomp("*")}/
           else
             route =~ /#{env['PATH_INFO']}/ 
           end
