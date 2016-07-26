@@ -3,6 +3,7 @@ module Rack::Authorize
     def initialize(app, opts = {}, &block)
       @app = app
       @no_auth_routes = opts[:excludes] || {}
+      puts @no_auth_routes
       @auth_definition = opts[:auth_definition] || "scopes"
       @block = block
     end
@@ -26,6 +27,7 @@ module Rack::Authorize
 
     def authorizable_route?(env)
       if @no_auth_routes.length > 0
+        puts !@no_auth_routes.find { |route| route =~ /#{env['PATH_INFO']}/ }
         !@no_auth_routes.find { |route| route =~ /#{env['PATH_INFO']}/ }
       end
     end
