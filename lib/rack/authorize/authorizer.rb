@@ -27,8 +27,13 @@ module Rack::Authorize
     def authorizable_route?(env)
       if @no_auth_routes.length > 0
         !@no_auth_routes.find do |route| 
-          if route =~ /\*/
+          # This checks if the excluded route has a trailing *
+          # if it does it checks the path with the route as
+          # its regexp thus checking a partial match
+          if route =~ /\*$/
             env['PATH_INFO'] =~ /#{route.chomp("*")}/
+          # Otherwise it checks the route with the path
+          # as its regexp thus checking a complete match
           else
             route =~ /#{env['PATH_INFO']}/ 
           end
