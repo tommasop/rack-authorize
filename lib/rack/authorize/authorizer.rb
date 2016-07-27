@@ -13,9 +13,9 @@ module Rack::Authorize
         method = env["REQUEST_METHOD"]
         path = env["PATH_INFO"]
         # The JWT payload is saved in rack.jwt.session the scopes key is scopes
-        #puts "----------------------------"
-        #puts env
-        #puts "----------------------------"
+        puts "----------------------------"
+        puts env
+        puts "----------------------------"
         scopes = Oj.load(env.fetch("rack.jwt.session", {})[@auth_definition])
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
       end
