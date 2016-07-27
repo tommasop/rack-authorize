@@ -17,7 +17,7 @@ module Rack::Authorize
         puts env
         puts "----------------------------"
         puts @auth_definition
-        puts env.fetch("rack.jwt.session", {})
+        puts env.fetch("rack.jwt.session", {}).class
         scopes = Oj.load(env.fetch("rack.jwt.session", {})[@auth_definition])
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
       end
