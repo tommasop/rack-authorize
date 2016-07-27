@@ -13,9 +13,9 @@ module Rack::Authorize
         method = env["REQUEST_METHOD"]
         path = env["PATH_INFO"]
         # The JWT payload is saved in rack.jwt.session the scopes key is scopes
-        puts "----------------------------"
-        puts env
-        puts "----------------------------"
+        #puts "----------------------------"
+        #puts env
+        #puts "----------------------------"
         jwt_session_data = env.fetch("rack.jwt.session", {})
         if jwt_session_data.is_a? String
           jwt_session_data = Oj.load(jwt_session_data)
