@@ -6,8 +6,12 @@ module Rack::Authorize
       @auth_definition = opts[:auth_definition] || "scopes"
       @block = block
     end
-
+    
     def call(env)
+      dup._call(env)
+    end
+
+    def _call(env)
       #puts env
       if authorizable_route?(env)
         method = env["REQUEST_METHOD"]
