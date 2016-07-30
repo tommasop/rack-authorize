@@ -20,12 +20,16 @@ module Rack::Authorize
         #puts "----------------------------"
         #puts env
         #puts "----------------------------"
-        jwt_session_data = env.fetch("rack.jwt.session", {})
+        if Object.constants.include?(:Rails)
+          jwt_session_data = env.fetch('rack.session', {}).fetch("jwt_token", {})
+        else
+          jwt_session_data = env.fetch("rack.jwt.session", {})
+        end
         if jwt_session_data.is_a? String
           jwt_session_data = Oj.load(jwt_session_data)
           scopes = jwt_session_data.fetch(@auth_definition.to_sym, {})
         else
-          scopes = Oj.load(env.fetch("rack.jwt.session", {})[@auth_definition])
+          scopes = Oj.load(jwt_session_data[@auth_definition])
         end
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
       end
