@@ -31,7 +31,11 @@ module Rack::Authorize
         else
           scopes = Oj.load(jwt_session_data[@auth_definition])
         end
-        return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
+        if Object.constants.include?(:Rails)
+          env["rack_session"]["jwt_authorized"] = @block.call(method, path, scopes)
+        else
+          return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
+        end
       end
       @app.call(env)
     end
