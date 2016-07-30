@@ -20,11 +20,7 @@ module Rack::Authorize
         #puts "----------------------------"
         #puts env
         #puts "----------------------------"
-        if Object.constants.include?(:Rails)
-          jwt_session_data = env.fetch('rack.session', {}).fetch("jwt_token", {})
-        else
-          jwt_session_data = env.fetch("rack.jwt.session", {})
-        end
+        jwt_session_data = env.fetch("rack.jwt.session", {})
         if jwt_session_data.is_a? String
           jwt_session_data = Oj.load(jwt_session_data)
           scopes = jwt_session_data.fetch(@auth_definition.to_sym, {})
