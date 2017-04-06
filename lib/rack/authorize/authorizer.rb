@@ -21,7 +21,8 @@ module Rack::Authorize
         if jwt_session_data.empty?
           return [403, {}, ["Access Forbidden"]]
         else
-          service_role = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }[:role] 
+          service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
+          service_role = service ? service[:role] : nil  
         end
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, service_role)
       end
