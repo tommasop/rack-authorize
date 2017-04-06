@@ -1,33 +1,29 @@
 module Rack::Authorize
   class Authorizer
     def initialize(app, opts = {}, &block)
+      raise 'Service Name must be provided' if opts[:service_name].nil?
       @app = app
       @no_auth_routes = opts[:excludes] || {}
-      @auth_definition = opts[:auth_definition] || "scopes"
+      @service_name = opts[:service_name]
       @block = block
     end
     
     def call(env)
-      dup._call(env)
-    end
-
-    def _call(env)
-      #puts env
       if authorizable_route?(env)
         method = env["REQUEST_METHOD"]
         path = env["PATH_INFO"]
+        current_server = env["SERVER_NAME"]
         # The JWT payload is saved in rack.jwt.session the scopes key is scopes
-        #puts "----------------------------"
-        #puts env
-        #puts "----------------------------"
-        jwt_session_data = env.fetch("rack.jwt.session", {})
-        if jwt_session_data.is_a? String
-          jwt_session_data = Oj.load(jwt_session_data)
-          scopes = jwt_session_data.fetch(@auth_definition.to_sym, {})
+        puts "----------------------------"
+        puts env
+        puts "----------------------------"
+        jwt_session_data = Oj.load(env.fetch("rack.jwt.session", "{}"))
+        if jwt_session_data.empty?
+          return [403, {}, ["Access Forbidden"]]
         else
-          scopes = Oj.load(jwt_session_data[@auth_definition])
+          service_role = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }[:role] 
         end
-        return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, scopes)
+        return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, service_role)
       end
       @app.call(env)
     end
