@@ -40,7 +40,7 @@ module Rack::Authorize
           # If there is an auth_definition the external scopes will
           # override the internal token roles definition
           if @auth_definition
-            service_role = Oj.load(env.fetch("rack.jwt.session", "{}"))[@auth_definition]
+            service_role = Oj.load(env.fetch("rack.jwt.session", "{}"))[@auth_definition.to_sym]
           else
             service_role = service ? service[:role] : nil  
           end
