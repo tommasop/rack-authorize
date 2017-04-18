@@ -16,6 +16,7 @@ module Rack::Authorize
       @app = app
       @no_auth_routes = opts[:excludes] || {}
       @service_name = opts[:service_name]
+      @auth_definition = opts[:auth_definition]
       @block = block
     end
     
@@ -30,13 +31,19 @@ module Rack::Authorize
         puts "----------------------------"
         # I must take into account the situation with two tokens, one
         # internal and one coming from an external source
+        # jwt_session_data will always fetch the internal token data
         jwt_session_data = Oj.load(env.fetch("rack.jwt.ext.session", env.fetch("rack.jwt.session", "{}")))
         if jwt_session_data.empty?
           return [403, {}, ["Access Forbidden"]]
         else
           service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
-          p current_server
-          service_role = service ? service[:role] : nil  
+          # If there is an auth_definition the external scopes will
+          # override the internal token roles definition
+          if @auth_definition
+            service_role = Oj.load(env.fetch("rack.jwt.session", "{}"))[@auth_definition]
+          else
+            service_role = service ? service[:role] : nil  
+          end
         end
         return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, service_role)
       end
