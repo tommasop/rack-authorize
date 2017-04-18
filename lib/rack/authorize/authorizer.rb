@@ -1,5 +1,16 @@
 module Rack::Authorize
   class Authorizer
+    # The Authorizer must have json web token data containing:
+    # username
+    # job_id
+    # an Array of services that sepcify which
+    # microservices are available for the user
+    # an external_token
+    # which embeds optional tokens coming from an external
+    # authorization/identity source
+    # the two payloads will be found in these ENV variables:
+    # rack.jwt.session
+    # rack.jwt.ext.session
     def initialize(app, opts = {}, &block)
       raise 'Service Name must be provided' if opts[:service_name].nil?
       @app = app
@@ -17,7 +28,9 @@ module Rack::Authorize
         puts "----------------------------"
         puts env
         puts "----------------------------"
-        jwt_session_data = Oj.load(env.fetch("rack.jwt.session", "{}"))
+        # I must take into account the situation with two tokens, one
+        # internal and one coming from an external source
+        jwt_session_data = Oj.load(env.fetch("rack.jwt.ext.session", env.fetch("rack.jwt.session", "{}")))
         if jwt_session_data.empty?
           return [403, {}, ["Access Forbidden"]]
         else
