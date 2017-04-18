@@ -36,12 +36,12 @@ module Rack::Authorize
         if jwt_session_data.empty?
           return [403, {}, ["Access Forbidden"]]
         else
-          service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
           # If there is an auth_definition the external scopes will
           # override the internal token roles definition
           if @auth_definition
             service_role = Oj.load(env.fetch("rack.jwt.session", "{}"))[@auth_definition.to_sym]
           else
+            service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
             service_role = service ? service[:role] : nil  
           end
         end
