@@ -41,7 +41,11 @@ module Rack::Authorize
           if @auth_definition
             service_role = Oj.load(env.fetch("rack.jwt.session", "{}"))[@auth_definition.to_sym]
           else
-            service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
+            if jwt_session_data[:env] == "development"
+              service = jwt_session_data[:services].detect{|serv| serv[:name] == @service_name }
+            else
+              service = jwt_session_data[:services].detect{|serv| serv[:url].include?(current_server) && serv[:name] == @service_name }
+            end
             service_role = service ? service[:role] : nil  
           end
         end
