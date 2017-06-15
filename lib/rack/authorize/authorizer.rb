@@ -26,9 +26,9 @@ module Rack::Authorize
         path = env["PATH_INFO"]
         current_server = env["SERVER_NAME"]
         # The JWT payload is saved in rack.jwt.session the scopes key is scopes
-        puts "----------------------------"
-        puts env
-        puts "----------------------------"
+        Loga.logger.debug "----------------------------"
+        Loga.logger.debug env
+        Loga.logger.debug "----------------------------"
         # I must take into account the situation with two tokens, one
         # internal and one coming from an external source
         # jwt_session_data will always fetch the internal token data
