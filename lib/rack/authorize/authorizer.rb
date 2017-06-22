@@ -34,7 +34,7 @@ module Rack::Authorize
         # jwt_session_data will always fetch the internal token data
         jwt_session_data = Oj.load(env.fetch("rack.jwt.ext.session", env.fetch("rack.jwt.session", "{}")))
         if jwt_session_data.empty?
-          return [403, {}, ["Access Forbidden"]]
+          return [401, {}, [{ error: { code: "invalid_access_token", message: "Invalid access token" } }.to_json]]
         else
           # If there is an auth_definition the external scopes will
           # override the internal token roles definition
@@ -49,7 +49,7 @@ module Rack::Authorize
             service_role = service ? service[:role] : nil  
           end
         end
-        return [403, {}, ["Access Forbidden"]] unless @block.call(method, path, service_role)
+        return [403, {}, [{ error: { code: "access_forbidden", message: "Access Forbidden"}}.to_json]] unless @block.call(method, path, service_role)
       end
       @app.call(env)
     end
